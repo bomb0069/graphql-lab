@@ -2,6 +2,9 @@ package graphql
 
 import (
 	// "strconv"
+	"graphql-api/pkg/data/models"
+	"graphql-api/pkg/graphql/resolvers"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -26,3 +29,29 @@ var ContactGraphQLType = graphql.NewObject(graphql.ObjectConfig{
 		// Add field here
 	},
 })
+
+var ContactPaginationGraphQLType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "ContactPagination",
+	Fields: graphql.Fields{
+		"contacts":   &graphql.Field{Type: graphql.NewList(ContactGraphQLType)},
+		// Add field here
+	},
+})
+
+type ContactQueries struct {
+	Gets          func(string) ([]*models.ContactModel, error)         `json:"gets"`
+}
+
+// Define the ContactQueries type
+var ContactQueriesType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "ContactQueries",
+	Fields: graphql.Fields{
+		"gets": &graphql.Field{
+			Type: graphql.NewList(ContactGraphQLType),
+			Args: SearhTextQueryArgument,
+			Resolve:// auth.AuthorizeResolverClean("contacts.gets", monitoring.TraceResolver( cache.GetCacheResolver(resolvers.GetContactResolve))),
+			resolvers.GetContactResolve,
+		},
+	},
+})
+
