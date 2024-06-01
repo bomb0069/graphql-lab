@@ -52,6 +52,12 @@ var ContactQueriesType = graphql.NewObject(graphql.ObjectConfig{
 			Resolve:// auth.AuthorizeResolverClean("contacts.gets", monitoring.TraceResolver( cache.GetCacheResolver(resolvers.GetContactResolve))),
 			resolvers.GetContactResolve,
 		},
+		"getContactById": &graphql.Field{
+			Type: graphql.NewList(ContactGraphQLType),
+			Args: SearhTextQueryArgument,
+			Resolve:// auth.AuthorizeResolverClean("contacts.gets", monitoring.TraceResolver( cache.GetCacheResolver(resolvers.GetContactResolve))),
+			resolvers.GetContactResolveById,
+		},
 	},
 })
 

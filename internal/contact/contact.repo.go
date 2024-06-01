@@ -63,3 +63,48 @@ func (cr *ContactRepo) GetContactsBySearchText(searchText string, limit, offset 
 
   return contacts, nil
 }
+
+// Get Contacts fetches contacts from the database with support for text search, limit, and offset
+func (cr *ContactRepo) GetContactsById(searchText string, limit, offset int) ([]*models.ContactModel, error) {
+  var contacts []*models.ContactModel
+
+  query := fmt.Sprintf(`
+            SELECT * FROM contact
+             Where contact_id = %s
+            LIMIT ? OFFSET ?
+        `, searchText)
+
+  rows, err := cr.DB.Query(query, limit, offset)
+  if err != nil {
+    return nil, err
+  }
+  defer rows.Close()
+
+  for rows.Next() {
+    var contact models.ContactModel
+    err := rows.Scan(
+      &contact.ContactId,
+      &contact.Name,
+      &contact.FirstName,
+      &contact.LastName,
+      &contact.GenderId,
+      &contact.Dob,
+      &contact.Email,
+      &contact.Phone,
+      &contact.Address,
+      &contact.PhotoPath,
+      &contact.CreatedAt,
+      &contact.CreatedBy,
+    )
+    if err != nil {
+      return nil, err
+    }
+    contacts = append(contacts, &contact)
+  }
+
+  if err := rows.Err(); err != nil {
+    return nil, err
+  }
+
+  return contacts, nil
+}
